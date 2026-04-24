@@ -1,0 +1,1 @@
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}html{scroll-behavior:smooth}body{font-family:Segoe UI,system-ui,sans-serif;background:#0b0f0e;color:#eeeae2;overflow-x:hidden}@media(max-width:700px){.desktop-nav{display:none!important}#hamburger-btn{display:flex!important}}@media(min-width:701px){#hamburger-btn{display:none!important}}
