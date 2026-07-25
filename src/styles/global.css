@@ -1,32 +1,99 @@
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scroll-behavior: smooth;
+}
+
+:root {
+  --bg-primary: #0d0d0f;
+  --bg-secondary: #141418;
+  --bg-card: #1a1a1f;
+  --bg-card-hover: #222228;
+  --accent-gold: #c9a24b;
+  --accent-crimson: #e63950;
+  --accent-rose: #e8a4bf;
+  --text-primary: #f0e6e8;
+  --text-secondary: #a09498;
+  --text-muted: #6b6065;
+  --glow-gold: 0 0 20px rgba(201, 162, 75, 0.3);
+  --glow-crimson: 0 0 20px rgba(230, 57, 80, 0.3);
+  --glow-rose: 0 0 15px rgba(232, 164, 191, 0.2);
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Poppins', -apple-system, sans-serif;
+  --border-radius: 16px;
 }
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-gold) var(--bg-secondary);
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #0b0f0e;
-  color: #eeeae2;
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (max-width: 700px) {
-  .desktop-nav {
-    display: none !important;
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 3px;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  text-align: center;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-crimson));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+section {
+  padding: 5rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  #hamburger-btn {
-    display: flex !important;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (min-width: 701px) {
-  #hamburger-btn {
-    display: none !important;
-  }
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
