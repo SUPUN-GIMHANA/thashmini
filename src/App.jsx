@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { PHOTOS } from "./data/photos";
+import loveVideo from "./video/0725(1).mp4";
 
 /* ─── Floating Particles / Hearts ─── */
 function Particles() {
@@ -495,7 +496,6 @@ const scrollDotStyle = {
   animation: "scrollDot 2s ease-in-out infinite",
 };
 
-/* ─── Countdown Section ─── */
 function Countdown() {
   const target = new Date("2026-07-27T00:00:00").getTime();
   const [now, setNow] = useState(Date.now());
@@ -751,45 +751,31 @@ const lightboxCloseStyle = {
 /* ─── Proposal ─── */
 function Proposal({ onCelebrate }) {
   const [accepted, setAccepted] = useState(false);
-  const [noButtonPos, setNoButtonPos] = useState({ x: 24, y: 24 });
-  const [noButtonTilt, setNoButtonTilt] = useState(-8);
+  const [noCount, setNoCount] = useState(0);
+  const [showAngry, setShowAngry] = useState(false);
   const stageRef = useRef(null);
-  const noButtonRef = useRef(null);
 
-  const moveNoButton = useCallback(() => {
-    const stage = stageRef.current;
-    const button = noButtonRef.current;
-    if (!stage || !button) return;
-
-    const padding = 18;
-    const stageWidth = stage.clientWidth;
-    const stageHeight = stage.clientHeight;
-    const buttonWidth = button.offsetWidth || 88;
-    const buttonHeight = button.offsetHeight || 44;
-    const maxX = Math.max(padding, stageWidth - buttonWidth - padding);
-    const maxY = Math.max(padding, stageHeight - buttonHeight - padding);
-    const x = padding + Math.random() * Math.max(0, maxX - padding);
-    const y = padding + Math.random() * Math.max(0, maxY - padding);
-
-    setNoButtonPos({ x, y });
-    setNoButtonTilt((prev) => prev + (Math.random() > 0.5 ? 24 : -24));
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(moveNoButton, 60);
-    return () => clearTimeout(timer);
-  }, [moveNoButton]);
-
-  const handleNoAttempt = (event) => {
+  const handleNoClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    moveNoButton();
+    setNoCount((c) => c + 1);
+    setShowAngry(true);
+    setTimeout(() => setShowAngry(false), 3000);
   };
 
   const handleYes = (event) => {
     setAccepted(true);
     onCelebrate?.(event);
   };
+
+  const angryMessages = [
+    "Mamat chuttakvat adare ne kiyanna beruva hitiye moda ruvi 😡",
+    "Moda ruvi 😠",
+    "Mamat chuttakvat adare ne kiyanna beruva hitiye moda ruvi 😡",
+    "Moda ruvi 😠",
+  ];
+
+  const currentAngryMsg = angryMessages[Math.min(noCount - 1, angryMessages.length - 1)];
 
   return (
     <section id="proposal" className="fade-in">
@@ -809,30 +795,25 @@ function Proposal({ onCelebrate }) {
                   One tap on Yes brings the hearts, the glow, and the moment we keep forever.
                 </p>
 
-                <div style={proposalActionsStyle}>
+                <div style={proposalButtonsRowStyle}>
                   <button type="button" onClick={handleYes} style={proposalYesButtonStyle}>
                     Yes
                   </button>
-
                   <button
                     type="button"
-                    ref={noButtonRef}
-                    onPointerEnter={handleNoAttempt}
-                    onPointerDown={handleNoAttempt}
-                    onMouseEnter={handleNoAttempt}
-                    onFocus={handleNoAttempt}
-                    onTouchStart={handleNoAttempt}
-                    onClick={handleNoAttempt}
-                    style={{
-                      ...proposalNoButtonStyle,
-                      left: `${noButtonPos.x}px`,
-                      top: `${noButtonPos.y}px`,
-                      transform: `rotate(${noButtonTilt}deg)`,
-                    }}
+                    onClick={handleNoClick}
+                    style={proposalNoButtonStaticStyle}
                   >
                     No
                   </button>
                 </div>
+
+                {showAngry && (
+                  <div style={angryOverlayStyle}>
+                    <span style={{ fontSize: "3rem" }}>😡</span>
+                    <p style={angryTextStyle}>{currentAngryMsg}</p>
+                  </div>
+                )}
               </div>
 
               <div style={proposalBadgeStyle}>
@@ -899,6 +880,23 @@ const proposalCopyStyle = {
   minHeight: "300px",
 };
 
+const angryOverlayStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  background: "rgba(13, 13, 15, 0.95)",
+  border: "1px solid rgba(230, 57, 80, 0.4)",
+  borderRadius: "var(--border-radius)",
+  padding: "1.5rem 2rem",
+  textAlign: "center",
+  animation: "angryShake 0.4s ease-in-out",
+  zIndex: 10,
+  width: "max-content",
+  maxWidth: "100%",
+  boxShadow: "0 0 40px rgba(230, 57, 80, 0.2)",
+};
+
 const proposalKickerStyle = {
   margin: 0,
   color: "var(--accent-gold)",
@@ -923,43 +921,37 @@ const proposalBodyStyle = {
   lineHeight: 1.8,
 };
 
-const proposalActionsStyle = {
-  position: "relative",
+const proposalButtonsRowStyle = {
+  display: "flex",
+  gap: "1rem",
   marginTop: "2rem",
-  minHeight: "160px",
-  borderRadius: "calc(var(--border-radius) - 6px)",
-  border: "1px dashed rgba(201,162,75,0.18)",
-  background: "rgba(255,255,255,0.02)",
-  overflow: "hidden",
 };
 
 const proposalYesButtonStyle = {
   border: "none",
   borderRadius: "999px",
-  padding: "0.95rem 1.8rem",
+  padding: "0.95rem 2rem",
   fontSize: "1rem",
   fontWeight: 700,
   cursor: "pointer",
   background: "linear-gradient(135deg, var(--accent-gold), #f4d79a)",
   color: "var(--bg-primary)",
   boxShadow: "0 10px 25px rgba(201,162,75,0.3)",
-  position: "absolute",
-  left: "18px",
-  top: "18px",
+  flex: 1,
+  fontFamily: "var(--font-body)",
 };
 
-const proposalNoButtonStyle = {
-  position: "absolute",
+const proposalNoButtonStaticStyle = {
   border: "1px solid rgba(255,255,255,0.22)",
   borderRadius: "999px",
-  padding: "0.9rem 1.7rem",
+  padding: "0.95rem 2rem",
   fontSize: "1rem",
   fontWeight: 700,
   cursor: "pointer",
   background: "rgba(255,255,255,0.05)",
   color: "var(--text-primary)",
-  transition: "transform 0.18s ease, left 0.18s ease, top 0.18s ease",
-  touchAction: "none",
+  flex: 1,
+  fontFamily: "var(--font-body)",
 };
 
 const proposalBadgeStyle = {
@@ -1030,9 +1022,17 @@ const proposalAcceptedTextStyle = {
   fontSize: "1rem",
 };
 
+const angryTextStyle = {
+  fontFamily: "var(--font-heading)",
+  fontSize: "clamp(0.8rem, 2vw, 1rem)",
+  color: "var(--accent-crimson)",
+  margin: "0.4rem 0 0",
+  fontStyle: "italic",
+};
+
 /* ─── Love Letter ─── */
 function LoveLetter() {
-  const letterText = `My Dearest R,
+  const letterText = `My Dearest Babe❤️,
 
 Every day with you feels like a beautiful dream I never want to wake up from. This past year has been the most magical chapter of our lives — filled with laughter, warmth, and a love that grows deeper with each passing moment.
 
@@ -1076,6 +1076,18 @@ S ♥`;
       <h2 className="section-title">A Letter For You</h2>
       <p className="section-subtitle">From the heart</p>
 
+      <div style={videoWrapStyle}>
+        <video
+          src={loveVideo}
+          controls
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={videoStyle}
+        />
+      </div>
+
       <div style={letterCardStyle}>
         <div style={letterDecorStyle}>♥</div>
         <pre style={letterTextStyle}>{displayed}<span style={{ animation: "blink 1s infinite" }}>|</span></pre>
@@ -1083,6 +1095,21 @@ S ♥`;
     </section>
   );
 }
+
+const videoWrapStyle = {
+  maxWidth: "500px",
+  margin: "0 auto 2rem",
+  borderRadius: "var(--border-radius)",
+  overflow: "hidden",
+  border: "1px solid rgba(201,162,75,0.15)",
+  boxShadow: "0 4px 30px rgba(0,0,0,0.4), var(--glow-gold)",
+};
+
+const videoStyle = {
+  width: "100%",
+  display: "block",
+  borderRadius: "var(--border-radius)",
+};
 
 const letterCardStyle = {
   background: "var(--bg-card)",
@@ -1268,6 +1295,13 @@ export default function App() {
         @keyframes proposalPulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.16); }
+        }
+        @keyframes angryShake {
+          0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+          20% { transform: translate(-50%, -50%) rotate(-3deg); }
+          40% { transform: translate(-50%, -50%) rotate(3deg); }
+          60% { transform: translate(-50%, -50%) rotate(-2deg); }
+          80% { transform: translate(-50%, -50%) rotate(2deg); }
         }
       `}</style>
 
